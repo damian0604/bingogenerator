@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 from random import sample
+from pdfkit import from_string
 
 class Bingo():
     def __init__(self, inputfile):
@@ -18,6 +19,7 @@ if __name__ == "__main__":
     parser.add_argument('spelers', type=int, default=1,help="Hoe veel kaarten heb je nodig?")
     parser.add_argument('afmeting', type=int, default=4, help="Hoe groot moet je bingokaart zijn? Voor een 4x4 kaart geef je 4 aan.")
     parser.add_argument('inputbestand', help = "Hoe heet het bestand waarmee je de bingokaarten wilt vullen?")
+    parser.add_argument('format', choices={"pdf","html"}, default="pdf", help = "In welk format wil je de bingokaarten opslaan?")
     args = parser.parse_args()
 
     if args.afmeting != 4:
@@ -25,7 +27,11 @@ if __name__ == "__main__":
     
     mybingo = Bingo(args.inputbestand)
     for i in range(args.spelers):
-        with open(f"{i}.html", mode = 'w') as fo:
-            fo.write(mybingo.generate('template.html', args.afmeting))
-        print(f"Bingokaart nummer {i} opgeslagen als {i}.html")
+        if args.format == "html":
+            with open(f"{i}.html", mode = 'w') as fo:
+                fo.write(mybingo.generate('template.html', args.afmeting))
+                print(f"Bingokaart nummer {i} opgeslagen als {i}.html")
+        elif args.format == "pdf":
+            from_string(mybingo.generate('template.html', args.afmeting), f"{i}.pdf")
+            print(f"Bingokaart nummer {i} opgeslagen als {i}.pdf")
         
